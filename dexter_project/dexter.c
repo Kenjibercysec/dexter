@@ -33,14 +33,18 @@ void executar_comando(const char *comando) {
 }
 
 // Monitoramento de processos ativos
-void monitorar_processos() {
+void monitorar_processos(char *log_resultados) {
     PROCESSENTRY32 processo;
     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     processo.dwSize = sizeof(PROCESSENTRY32);
+    strcat(log_resultados, "Monitoramento de processos ativos:\n");
     if (Process32First(snapshot, &processo)) {
         do {
-            printf("[Processo]: %s\n", processo.szExeFile);
+            strcat(log_resultados, processo.szExeFile);
+            strcat(log_resultados, "\n");
         } while (Process32Next(snapshot, &processo));
+    } else {
+        strcat(log_resultados, "Erro ao acessar os processos ativos.\n");
     }
     CloseHandle(snapshot);
 }
@@ -71,8 +75,18 @@ void desbloquear_ips() {
 }
 
 // Monitoramento de conexões de rede
-void monitorar_conexoes() {
-    system("netstat -ano");
+void monitorar_conexoes(char *log_resultados) {
+    FILE *fp = _popen("netstat -ano", "r"); // Use _popen to execute netstat and capture its output
+    if (fp) {
+        char buffer[512];
+        strcat(log_resultados, "Monitoramento de conexoes de rede:\n");
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            strcat(log_resultados, buffer); // Append each line of netstat output to log_resultados
+        }
+        _pclose(fp); // Close the pipe
+    } else {
+        strcat(log_resultados, "Erro ao executar netstat.\n");
+    }
 }
 
 // Verificação de arquivos maliciosos
@@ -101,7 +115,7 @@ void menu() {
     int command;
     char entrada[100];
     char ultima_acao[256] = "Nenhuma acao realizada ainda."; // Armazena a última ação realizada
-    char log_resultados[1024] = ""; // Armazena os resultados das ações
+    char log_resultados[4096] = ""; // Aumentei o tamanho para armazenar mais resultados
 
     while (1) {
         system("cls"); // Limpa a tela para atualizar o menu
@@ -129,38 +143,14 @@ void menu() {
                 strcpy(ultima_acao, "Executado Neofetch no CMD.");
                 strcat(log_resultados, "Neofetch executado com sucesso.\n");
                 break;
-            case 2: {
-                char buffer[512] = "Monitoramento de processos ativos:\n";
-                PROCESSENTRY32 processo;
-                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-                processo.dwSize = sizeof(PROCESSENTRY32);
-                if (Process32First(snapshot, &processo)) {
-                    do {
-                        strcat(buffer, processo.szExeFile);
-                        strcat(buffer, "\n");
-                    } while (Process32Next(snapshot, &processo));
-                }
-                CloseHandle(snapshot);
+            case 2:
+                monitorar_processos(log_resultados);
                 strcpy(ultima_acao, "Monitoramento de processos ativos realizado.");
-                strcpy(log_resultados, buffer); // Atualiza o log com os processos ativos
                 break;
-            }
-            case 3: {
-                FILE *fp = _popen("netstat -ano", "r");
-                if (fp) {
-                    char buffer[512];
-                    strcpy(log_resultados, "Monitoramento de conexoes de rede:\n");
-                    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-                        strcat(log_resultados, buffer);
-                    }
-                    _pclose(fp);
-                    strcpy(ultima_acao, "Monitoramento de conexoes de rede realizado.");
-                } else {
-                    strcpy(ultima_acao, "Falha ao monitorar conexoes de rede.");
-                    strcat(log_resultados, "Erro ao executar netstat.\n");
-                }
+            case 3:
+                monitorar_conexoes(log_resultados);
+                strcpy(ultima_acao, "Monitoramento de conexoes de rede realizado.");
                 break;
-            }
             case 4:
                 verificar_malware();
                 strcpy(ultima_acao, "Verificacao de malware realizada.");
@@ -171,10 +161,10 @@ void menu() {
                 scanf("%s", entrada);
                 if (atualizar_lista("whitelist.txt", entrada)) {
                     sprintf(ultima_acao, "IP %s adicionado a whitelist.", entrada);
-                    sprintf(log_resultados, "IP %s adicionado com sucesso a whitelist.\n", entrada);
+                    sprintf(log_resultados + strlen(log_resultados), "IP %s adicionado com sucesso a whitelist.\n", entrada);
                 } else {
                     sprintf(ultima_acao, "Falha ao adicionar IP %s a whitelist.", entrada);
-                    sprintf(log_resultados, "Erro ao adicionar IP %s a whitelist.\n", entrada);
+                    sprintf(log_resultados + strlen(log_resultados), "Erro ao adicionar IP %s a whitelist.\n", entrada);
                 }
                 break;
             case 6:
@@ -182,10 +172,10 @@ void menu() {
                 scanf("%s", entrada);
                 if (atualizar_lista("blacklist.txt", entrada)) {
                     sprintf(ultima_acao, "IP %s adicionado a blacklist.", entrada);
-                    sprintf(log_resultados, "IP %s adicionado com sucesso a blacklist.\n", entrada);
+                    sprintf(log_resultados + strlen(log_resultados), "IP %s adicionado com sucesso a blacklist.\n", entrada);
                 } else {
                     sprintf(ultima_acao, "Falha ao adicionar IP %s a blacklist.", entrada);
-                    sprintf(log_resultados, "Erro ao adicionar IP %s a blacklist.\n", entrada);
+                    sprintf(log_resultados + strlen(log_resultados), "Erro ao adicionar IP %s a blacklist.\n", entrada);
                 }
                 break;
             case 7:
