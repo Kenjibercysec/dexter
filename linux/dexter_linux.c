@@ -2,31 +2,36 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
 
-// Função para executar comandos no terminal
+// Executa comandos no terminal
 void executar_comando(const char *comando) {
     system(comando);
 }
 
-// Função para monitorar processos ativos
+// Monitora processos ativos
 void monitorar_processos() {
     executar_comando("ps -e");
 }
 
-// Função para monitorar conexões de rede
+// Monitora conexoes de rede
 void monitorar_conexoes() {
     executar_comando("ss -tulnp");
 }
 
-// Função para verificar malwares
-void verificar_malware() {
-    printf("Iniciando verificação de malwares...\n");
-    executar_comando("find / -type f > file_list.txt");
-    printf("Verificação concluída. Verifique o arquivo file_list.txt\n");
+// Verifica entradas na tabela ARP para detectar ataques MITM
+void monitorar_arp() {
+    printf("Verificando tabela ARP (possivel MITM)...\n");
+    executar_comando("arp -a");
 }
 
-// Função para bloquear IPs da blacklist
+// Simula uma verificacao de malware (listagem de arquivos)
+void verificar_malware() {
+    printf("Iniciando verificacao de malwares...\n");
+    executar_comando("find / -type f > file_list.txt");
+    printf("Verificacao concluida. Verifique o arquivo file_list.txt\n");
+}
+
+// Bloqueia IPs listados no arquivo blacklist.txt
 void bloquear_ips() {
     FILE *file = fopen("blacklist.txt", "r");
     char ip[100];
@@ -39,25 +44,25 @@ void bloquear_ips() {
             printf("Bloqueado: %s\n", ip);
         }
         fclose(file);
-        printf("Bloqueio de IPs concluído.\n");
+        printf("Bloqueio de IPs concluido.\n");
     } else {
         printf("Erro ao abrir blacklist.txt\n");
     }
 }
 
-// Função para desbloquear os IPs
+// Limpa as regras do iptables
 void desbloquear_ips() {
     executar_comando("sudo iptables -F");
     printf("Desbloqueio realizado.\n");
 }
 
-// Função para atualizar a whitelist/blacklist
+// Adiciona IP a uma lista (whitelist ou blacklist)
 int atualizar_lista(const char *arquivo, const char *entrada) {
     FILE *file = fopen(arquivo, "a");
     if (file) {
         fprintf(file, "%s\n", entrada);
         fclose(file);
-        printf("%s adicionado à lista %s\n", entrada, arquivo);
+        printf("%s adicionado a lista %s\n", entrada, arquivo);
         return 1;
     } else {
         printf("Erro ao abrir a lista %s\n", arquivo);
@@ -69,23 +74,71 @@ int atualizar_lista(const char *arquivo, const char *entrada) {
 void menu() {
     int opcao;
     char entrada[100];
-    char ultima_acao[256] = "Nenhuma ação realizada ainda.";
+    char ultima_acao[256] = "Nenhuma acao realizada ainda.";
+    char log_resultados[1024] = "Nenhum log registrado ainda.";
 
     while (1) {
-        printf("* 8 888888888o.      8 8888888888   `8.`8888.      ,8' 8888888 8888888888 8 8888888888   8 888888888o. *\n* 8 8888    `^888.   8 8888          `8.`8888.    ,8'        8 8888       8 8888         8 8888    `88. *\n* 8 8888        `88. 8 8888           `8.`8888.  ,8'         8 8888       8 8888         8 8888     `88 *\n* 8 8888         `88 8 8888            `8.`8888.,8'          8 8888       8 8888         8 8888     ,88 *\n* 8 8888          88 8 888888888888     `8.`88888'           8 8888       8 888888888888 8 8888.   ,88' *\n* 8 8888          88 8 8888             .88.`8888.           8 8888       8 8888         8 888888888P' *\n* 8 8888         ,88 8 8888            .8'`8.`8888.          8 8888       8 8888         8 8888`8b *\n* 8 8888        ,88' 8 8888           .8'  `8.`8888.         8 8888       8 8888         8 8888 `8b.\n* 8 8888    ,o88P'   8 8888          .8'    `8.`8888.        8 8888       8 8888         8 8888   `8b.\n* 8 888888888P'      8 888888888888 .8'      `8.`8888.       8 8888       8 888888888888 8 8888     `88. *\n\n\n");
-        printf("#------------------------------------#\n");
-        printf("\t Antivirus Options:\n");
-        printf("#------------------------------------#\n");
-        printf("1 - Monitorar processos ativos\n");
-        printf("2 - Monitorar conexões de rede\n");
-        printf("3 - Verificar malware\n");
-        printf("4 - Adicionar IP à whitelist\n");
-        printf("5 - Adicionar IP à blacklist\n");
-        printf("6 - Bloquear IPs da blacklist\n");
-        printf("7 - Desbloquear IPs\n");
-        printf("8 - Sair\n");
-        printf("\nÚltima ação: %s\n", ultima_acao);
-        printf("Escolha uma opção: ");
+        const char *ascii[] = {
+            "                      -___________-          ",
+            "                     (/     _     \\)         ",
+            "                     /_____(O)_____\          --DAAALEK BE BALLIN",
+            "                     // / / | \\ \\ \\\\         ",
+            "                    =================        ",
+            "                    // / | | | | \\ \\\\        ",
+            "                   ===================       ",
+            "                  //// || || || || \\\\\\\\      ",
+            "                  |||| || || || || ||||      ",
+            "                 /---___-----------,---\\     ",
+            "                 |  /   \\         -o-  |     ",
+            "                 /  \\___/          '   \\     ",
+            "                 +---------------------+     ",
+            "                /_   __    ___    __   _\\    ",
+            "               (__) (__)  (___)  (__) (__)   ",
+            "               |_    __    ___    __    _|   ",
+            "              (__)  (__)  (___)  (__)  (__)  ",
+            "              /_    ___    ___    ___    _\\  ",
+            "             (__)  (___)  (___)  (___)  (__) ",
+            "             |_     ___    ___    ___     _| ",
+            "            (__)   (___)  (___)  (___)   (__)",
+            "            /_______________________________\\"
+        };
+        
+        const char *menu_linhas[] = {
+            "#------------------------------------#",
+            "           Antivirus Options:",
+            "#------------------------------------#",
+            "1  - Executar Neofetch no CMD",
+            "2  - Monitorar processos ativos",
+            "3  - Monitorar conexoes de rede",
+            "4  - Verificar malware",
+            "5  - Adicionar a whitelist",
+            "6  - Adicionar a blacklist",
+            "7  - Bloquear IPs da blacklist",
+            "8  - Desbloquear IPs da blacklist",
+            "9  - Monitorar tabela ARP (detectar MITM)"
+            "10 - Sair",
+        };
+
+        int num_linhas_menu = sizeof(menu_linhas) / sizeof(menu_linhas[0]);
+        int num_linhas_ascii = sizeof(ascii) / sizeof(ascii[0]);
+        int max_linhas = (num_linhas_menu > num_linhas_ascii) ? num_linhas_menu : num_linhas_ascii;
+
+        printf("\n");
+
+        for (int i = 0; i < max_linhas; i++) {
+            if (i < num_linhas_menu)
+                printf("%-45s", menu_linhas[i]); // menu com alinhamento
+            else
+                printf("%-45s", ""); // linha vazia se o menu acabar
+
+            if (i < num_linhas_ascii)
+                printf("%s", ascii[i]); // imprime arte ao lado
+            printf("\n");
+        }
+
+        printf("\nUltima acao: %s\n", ultima_acao);
+        printf("\nLog de resultados:\n%s\n", log_resultados);
+        printf("\nEscolha uma opcao: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
@@ -95,37 +148,41 @@ void menu() {
                 break;
             case 2:
                 monitorar_conexoes();
-                strcpy(ultima_acao, "Monitoramento de conexões realizado.");
+                strcpy(ultima_acao, "Monitoramento de conexoes realizado.");
                 break;
             case 3:
-                verificar_malware();
-                strcpy(ultima_acao, "Verificação de malware realizada.");
+                monitorar_arp();
+                strcpy(ultima_acao, "Verificacao da tabela ARP realizada.");
                 break;
             case 4:
+                verificar_malware();
+                strcpy(ultima_acao, "Verificacao de malware realizada.");
+                break;
+            case 5:
                 printf("Digite o IP para a whitelist: ");
                 scanf("%s", entrada);
                 atualizar_lista("whitelist.txt", entrada);
-                strcpy(ultima_acao, "IP adicionado à whitelist.");
+                strcpy(ultima_acao, "IP adicionado a whitelist.");
                 break;
-            case 5:
+            case 6:
                 printf("Digite o IP para a blacklist: ");
                 scanf("%s", entrada);
                 atualizar_lista("blacklist.txt", entrada);
-                strcpy(ultima_acao, "IP adicionado à blacklist.");
+                strcpy(ultima_acao, "IP adicionado a blacklist.");
                 break;
-            case 6:
+            case 7:
                 bloquear_ips();
                 strcpy(ultima_acao, "Bloqueio de IPs realizado.");
                 break;
-            case 7:
+            case 8:
                 desbloquear_ips();
                 strcpy(ultima_acao, "Desbloqueio de IPs realizado.");
                 break;
-            case 8:
+            case 9:
                 exit(0);
             default:
-                printf("Opção inválida.\n");
-                strcpy(ultima_acao, "Opção inválida selecionada.");
+                printf("Opcao invalida.\n");
+                strcpy(ultima_acao, "Opcao invalida selecionada.");
                 break;
         }
     }

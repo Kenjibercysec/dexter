@@ -31,11 +31,27 @@ void monitorar_conexoes(char *log_resultados) {
     FILE *fp = _popen("netstat -ano", "r");
     if (fp) {
         char buffer[512];
-        strcat(log_resultados, "Conexões de rede:\n");
+        strcat(log_resultados, "Conexoes de rede:\n");
         while (fgets(buffer, sizeof(buffer), fp) != NULL) {
             strcat(log_resultados, buffer);
         }
         _pclose(fp);
+    }
+}
+
+// Monitor ARP table
+void monitorar_arp(char *log_resultados) {
+    FILE *fp = _popen("arp -a", "r");
+    if (fp) {
+        char buffer[512];
+        strcat(log_resultados, "Verificando tabela ARP:\n");
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            strcat(log_resultados, buffer);
+        }
+        _pclose(fp);
+        strcat(log_resultados, "Verificacao de tabela ARP concluida.\n");
+    } else {
+        strcat(log_resultados, "Erro ao executar comando arp -a.\n");
     }
 }
 
@@ -71,7 +87,7 @@ int main() {
         printf("#------------------------------------#\n");
         printf("\t Antivirus Options:\n");
         printf("#------------------------------------#\n");
-        printf("1 - Monitorar processos\n2 - Monitorar conexões de rede\n3 - Bloquear IP\n4 - Desbloquear IP\n5 - Adicionar à whitelist\n6 - Adicionar à blacklist\n7 - Sair\nEscolha: ");
+        printf("1 - Monitorar processos\n2 - Monitorar conexoes de rede\n3 - Monitorar tabela ARP (detectar MITM)\n4 - Bloquear IP\n5 - Desbloquear IP\n6 - Adicionar a whitelist\n7 - Adicionar a blacklist\n8 - Sair\nEscolha: ");
         scanf("%d", &command);
 
         switch (command) {
@@ -82,27 +98,30 @@ int main() {
                 monitorar_conexoes(log_resultados);
                 break;
             case 3:
+                monitorar_arp(log_resultados);
+                break;
+            case 4:
                 printf("Digite o IP para bloquear: ");
                 scanf("%s", entrada);
                 bloquear_ip(entrada);
                 break;
-            case 4:
+            case 5:
                 desbloquear_ip();
                 break;
-            case 5:
+            case 6:
                 printf("Digite o IP para whitelist: ");
                 scanf("%s", entrada);
                 atualizar_lista("whitelist.txt", entrada);
                 break;
-            case 6:
+            case 7:
                 printf("Digite o IP para blacklist: ");
                 scanf("%s", entrada);
                 atualizar_lista("blacklist.txt", entrada);
                 break;
-            case 7:
+            case 8:
                 exit(0);
             default:
-                printf("Opção inválida!\n");
+                printf("Opcao invalida!\n");
                 break;
         }
     }

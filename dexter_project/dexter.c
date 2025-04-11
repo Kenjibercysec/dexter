@@ -96,6 +96,21 @@ void verificar_malware() {
     printf("Verificacao concluida. Verifique o arquivo file_list.txt\n");
 }
 
+void monitorar_arp(char *log_resultados) {
+    FILE *fp = _popen("arp -a", "r");
+    if (fp) {
+        char buffer[512];
+        strcat(log_resultados, "Verificando tabela ARP:\n");
+        while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+            strcat(log_resultados, buffer);
+        }
+        _pclose(fp);
+        strcat(log_resultados, "Verificacao de tabela ARP concluida.\n");
+    } else {
+        strcat(log_resultados, "Erro ao executar comando arp -a.\n");
+    }
+}
+
 // Manipulação de listas (Whitelist/Blacklist)
 int atualizar_lista(const char *arquivo, const char *entrada) { // Change return type to int
     FILE *file = fopen(arquivo, "a");
@@ -118,22 +133,54 @@ void menu() {
     char log_resultados[4096] = ""; // Aumentei o tamanho para armazenar mais resultados
 
     while (1) {
-        system("cls"); // Limpa a tela para atualizar o menu
-        printf("* 8 888888888o.      8 8888888888   `8.`8888.      ,8' 8888888 8888888888 8 8888888888   8 888888888o. *\n* 8 8888    `^888.   8 8888          `8.`8888.    ,8'        8 8888       8 8888         8 8888    `88. *\n* 8 8888        `88. 8 8888           `8.`8888.  ,8'         8 8888       8 8888         8 8888     `88 *\n* 8 8888         `88 8 8888            `8.`8888.,8'          8 8888       8 8888         8 8888     ,88 *\n* 8 8888          88 8 888888888888     `8.`88888'           8 8888       8 888888888888 8 8888.   ,88' *\n* 8 8888          88 8 8888             .88.`8888.           8 8888       8 8888         8 888888888P' *\n* 8 8888         ,88 8 8888            .8'`8.`8888.          8 8888       8 8888         8 8888`8b *\n* 8 8888        ,88' 8 8888           .8'  `8.`8888.         8 8888       8 8888         8 8888 `8b.\n* 8 8888    ,o88P'   8 8888          .8'    `8.`8888.        8 8888       8 8888         8 8888   `8b.\n* 8 888888888P'      8 888888888888 .8'      `8.`8888.       8 8888       8 888888888888 8 8888     `88. *\n\n\n");
-        printf("#------------------------------------#\n");
-        printf("\t Antivirus Options:\n");
-        printf("#------------------------------------#\n");
-        printf("1 - Executar Neofetch no CMD\n");
-        printf("2 - Monitorar processos ativos\n");
-        printf("3 - Monitorar conexoes de rede\n");
-        printf("4 - Verificar malware\n");
-        printf("5 - Adicionar a whitelist\n");
-        printf("6 - Adicionar a blacklist\n");
-        printf("7 - Bloquear IPs da blacklist\n");
-        printf("8 - Desbloquear IPs da blacklist\n");
-        printf("9 - Sair\n");
-        printf("\nUltima acao: %s\n", ultima_acao); // Exibe a última ação realizada
-        printf("\nLog de resultados:\n%s\n", log_resultados); // Exibe os resultados das ações anteriores
+        const char *ascii[] = {
+            " * 8 888888888o.      8 8888888888   `8.`8888.      ,8' 8888888 8888888888 8 8888888888   8 888888888o. *",
+            " * 8 8888    `^888.   8 8888          `8.`8888.    ,8'        8 8888       8 8888         8 8888    `88. *",
+            " * 8 8888        `88. 8 8888           `8.`8888.  ,8'         8 8888       8 8888         8 8888     `88 *",
+            " * 8 8888         `88 8 8888            `8.`8888.,8'          8 8888       8 8888         8 8888     ,88 *",
+            " * 8 8888          88 8 888888888888     `8.`88888'           8 8888       8 888888888888 8 8888.   ,88' *",
+            " * 8 8888          88 8 8888             .88.`8888.           8 8888       8 8888         8 888888888P'  *",
+            " * 8 8888         ,88 8 8888            .8'`8.`8888.          8 8888       8 8888         8 8888`8b       ",
+            " * 8 8888        ,88' 8 8888           .8'  `8.`8888.         8 8888       8 8888         8 8888 `8b.     ",
+            " * 8 8888    ,o88P'   8 8888          .8'    `8.`8888.        8 8888       8 8888         8 8888   `8b.   ",
+            " * 8 888888888P'      8 888888888888 .8'      `8.`8888.       8 8888       8 888888888888 8 8888     `88. *"
+        };
+
+        const char *menu_linhas[] = {
+            "#------------------------------------#",
+            "           Antivirus Options:",
+            "#------------------------------------#",
+            "1  - Executar Neofetch no CMD",
+            "2  - Monitorar processos ativos",
+            "3  - Monitorar conexoes de rede",
+            "4  - Verificar malware",
+            "5  - Adicionar a whitelist",
+            "6  - Adicionar a blacklist",
+            "7  - Bloquear IPs da blacklist",
+            "8  - Desbloquear IPs da blacklist",
+            "9  - Monitorar tabela ARP (detectar MITM)"
+            "10 - Sair",
+        };
+
+        int num_linhas_menu = sizeof(menu_linhas) / sizeof(menu_linhas[0]);
+        int num_linhas_ascii = sizeof(ascii) / sizeof(ascii[0]);
+        int max_linhas = (num_linhas_menu > num_linhas_ascii) ? num_linhas_menu : num_linhas_ascii;
+
+        printf("\n");
+
+        for (int i = 0; i < max_linhas; i++) {
+            if (i < num_linhas_menu)
+                printf("%-45s", menu_linhas[i]); // menu com alinhamento
+            else
+                printf("%-45s", ""); // linha vazia se o menu acabar
+
+            if (i < num_linhas_ascii)
+                printf("%s", ascii[i]); // imprime arte ao lado
+            printf("\n");
+        }
+
+        printf("\nUltima acao: %s\n", ultima_acao);
+        printf("\nLog de resultados:\n%s\n", log_resultados);
         printf("\nEscolha uma opcao: ");
         scanf("%d", &command);
 
@@ -193,6 +240,10 @@ void menu() {
             default:
                 strcpy(ultima_acao, "Opcao invalida selecionada.");
                 strcat(log_resultados, "Opcao invalida inserida.\n");
+                break;
+            case 10:
+                monitorar_arp(log_resultados);
+                strcpy(ultima_acao, "Monitoramento de ARP realizado.");
                 break;
         }
     }
