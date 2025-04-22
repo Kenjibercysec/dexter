@@ -24,11 +24,73 @@ void monitorar_arp() {
     executar_comando("arp -a");
 }
 
-// Simula uma verificacao de malware (listagem de arquivos)
+// Verificação de malware com wordlist e extensões
 void verificar_malware() {
     printf("Iniciando verificacao de malwares...\n");
-    executar_comando("find / -type f > file_list.txt");
-    printf("Verificacao concluida. Verifique o arquivo file_list.txt\n");
+
+    // Recomenda rodar como root para acesso completo
+    if (geteuid() != 0) {
+        printf("[!] Aviso: Recomendado rodar como root para acesso total aos arquivos.\n");
+        printf("[!] Use: sudo ./seu_programa\n");
+    }
+
+    // Escaneia o sistema e gera file_list.txt
+    printf("Escaneando arquivos do sistema...\n");
+    executar_comando("sudo find / -type f 2>/dev/null > file_list.txt");
+
+    // Abre a lista de arquivos encontrados
+    FILE *lista_arquivos = fopen("file_list.txt", "r");
+    // Abre a wordlist no caminho absoluto que você salvou
+    FILE *wordlist      = fopen("/home/kenji/Desktop/dexter/linux/output/malware_wordlist.txt", "r");
+
+    if (!lista_arquivos || !wordlist) {
+        printf("Erro ao abrir arquivos de verificação.\n");
+        if (lista_arquivos) fclose(lista_arquivos);
+        if (wordlist)      fclose(wordlist);
+        return;
+    }
+
+    char arquivo[1024];
+    char malware[256];
+
+    // Extensões suspeitas
+    const char *extensoes_suspeitas[] = {
+        ".exe", ".bat", ".cmd", ".vbs", ".vbe", ".js", ".jse", ".ps1",
+        ".psm1", ".scr", ".com", ".pif", ".inf", ".drv", ".sys",
+        ".msi", ".lnk", ".cpl", ".url", ".hta", ".ws",  ".wsf", ".sh"
+    };
+    int total_extensoes = sizeof(extensoes_suspeitas) / sizeof(extensoes_suspeitas[0]);
+
+    printf("Analisando arquivos encontrados...\n");
+
+    while (fgets(arquivo, sizeof(arquivo), lista_arquivos)) {
+        arquivo[strcspn(arquivo, "\n")] = 0;
+
+        // 1) Verificação por nome na wordlist
+        rewind(wordlist);
+        while (fgets(malware, sizeof(malware), wordlist)) {
+            malware[strcspn(malware, "\n")] = 0;
+            if (strstr(arquivo, malware)) {
+                printf("[!] Nome suspeito encontrado: %s (corresponde a: %s)\n",
+                       arquivo, malware);
+            }
+        }
+
+        // 2) Verificação por extensão
+        char *extensao = strrchr(arquivo, '.');
+        if (extensao) {
+            for (int i = 0; i < total_extensoes; i++) {
+                if (strcmp(extensao, extensoes_suspeitas[i]) == 0) {
+                    printf("[!] Extensao suspeita encontrada: %s\n", arquivo);
+                    break;
+                }
+            }
+        }
+    }
+
+    fclose(lista_arquivos);
+    fclose(wordlist);
+    printf("Verificacao concluida.\n");
 }
 
 // Bloqueia IPs listados no arquivo blacklist.txt
@@ -36,10 +98,11 @@ void bloquear_ips() {
     FILE *file = fopen("blacklist.txt", "r");
     char ip[100];
     if (file) {
-        while (fgets(ip, sizeof(ip), file) != NULL) {
+        while (fgets(ip, sizeof(ip), file)) {
             ip[strcspn(ip, "\n")] = 0;
             char command[200];
-            snprintf(command, sizeof(command), "sudo iptables -A INPUT -s %s -j DROP", ip);
+            snprintf(command, sizeof(command),
+                     "sudo iptables -A INPUT -s %s -j DROP", ip);
             executar_comando(command);
             printf("Bloqueado: %s\n", ip);
         }
@@ -74,10 +137,13 @@ int atualizar_lista(const char *arquivo, const char *entrada) {
 void menu() {
     int opcao;
     char entrada[100];
-    char ultima_acao[256] = "Nenhuma acao realizada ainda.";
+    char ultima_acao[256]     = "Nenhuma acao realizada ainda.";
     char log_resultados[1024] = "Nenhum log registrado ainda.";
 
     while (1) {
+        // Limpa a tela antes de exibir o menu
+        system("clear");
+
         const char *ascii[] = {
             "                      -___________-          ",
             "                     (/     _     \\)         ",
@@ -102,23 +168,21 @@ void menu() {
             "            (__)   (___)  (___)  (___)   (__)",
             "            /_______________________________\\"
         };
-        
         const char *menu_linhas[] = {
             "#------------------------------------#",
             "           Antivirus Options:",
             "#------------------------------------#",
-            "1  - Executar Neofetch no CMD",
-            "2  - Monitorar processos ativos",
-            "3  - Monitorar conexoes de rede",
+            "1  - Monitorar processos ativos",
+            "2  - Monitoramento de conexoes",
+            "3  - Monitorar tabela ARP",
             "4  - Verificar malware",
             "5  - Adicionar a whitelist",
             "6  - Adicionar a blacklist",
             "7  - Bloquear IPs da blacklist",
             "8  - Desbloquear IPs da blacklist",
-            "9  - Monitorar tabela ARP (detectar MITM)"
-            "10 - Sair",
+            "9 - Sair",
         };
-
+        
         int num_linhas_menu = sizeof(menu_linhas) / sizeof(menu_linhas[0]);
         int num_linhas_ascii = sizeof(ascii) / sizeof(ascii[0]);
         int max_linhas = (num_linhas_menu > num_linhas_ascii) ? num_linhas_menu : num_linhas_ascii;
@@ -185,6 +249,11 @@ void menu() {
                 strcpy(ultima_acao, "Opcao invalida selecionada.");
                 break;
         }
+
+        // Pausa antes de atualizar o menu
+        printf("\nPressione Enter para continuar...");
+        getchar(); // Captura o '\n' deixado pelo scanf
+        getchar(); // Aguarda o usuário pressionar Enter
     }
 }
 
