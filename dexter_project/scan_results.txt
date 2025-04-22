@@ -1,0 +1,94 @@
+=== Scan de Malware Iniciado ===
+Diretório base: C:\Users\silas\OneDrive\Desktop\dexter\dexter_project
+
+[ALERTA] Possível malware encontrado: C:\\$Recycle.Bin\S-1-5-21-2168588739-3565939934-2555688210-1001\$R45FSAI\node_modules\.pnpm\lucide-react@0.454.0_react@19.1.0\node_modules\lucide-react\dist\esm\icons\worm.js
+[ALERTA] Possível malware encontrado: C:\\$Recycle.Bin\S-1-5-21-2168588739-3565939934-2555688210-1001\$R45FSAI\node_modules\.pnpm\lucide-react@0.454.0_react@19.1.0\node_modules\lucide-react\dist\esm\icons\worm.js.map
+[ALERTA] Possível malware encontrado: C:\\MinGW\msys\1.0\bin\ssh-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Git\usr\bin\gpg-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Git\usr\bin\gpg-connect-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Git\usr\bin\ssh-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Git\usr\bin\winpty-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Mozilla Firefox\default-browser-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Mozilla Firefox\updated\default-browser-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Raspberry Pi\Pico SDK v1.5.1\git\usr\bin\ssh-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\Windows Defender\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\Program Files\WSL\wslsettings\RestartAgent.exe
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\ProgramData\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25010.11-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25020.1009-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\DlpUserAgent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-AMFilter.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-NIS.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-Protection.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-RTP.man
+[ALERTA] Possível malware encontrado: C:\\Users\All Users\Microsoft\Windows Defender\Platform\4.18.25030.2-0\Microsoft-Antimalware-Service.man
+[ALERTA] Possível malware encontrado: C:\\Users\silas\.cursor\extensions\ms-python.vscode-pylance-2024.8.1\dist\typeshed-fallback\stubs\gevent\gevent\backdoor.pyi
+[ALERTA] Possível malware encontrado: C:\\Users\silas\.vscode\extensions\ms-python.vscode-pylance-2025.4.1\dist\typeshed-fallback\stubs\gevent\gevent\backdoor.pyi
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\ChromeExtMalware.store
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\ChromeExtMalware.store.32_13389605739824318
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\ChromeExtMalware.store.32_13389696611020801
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\UrlMalware.store
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\UrlMalware.store.4_13389723541147575
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\BraveSoftware\Brave-Browser\User Data\Safe Browsing\UrlMalware.store.4_13389732427853050
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Figma\app-124.3.2\resources\FigmaAgent\figma_agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\FigmaAgent\figma_agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\GitHubDesktop\app-3.4.12\resources\app\git\usr\bin\ssh-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Google\Chrome\User Data\Safe Browsing\ChromeExtMalware.store
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Google\Chrome\User Data\Safe Browsing\ChromeExtMalware.store.32_13386548640707832
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Google\Chrome\User Data\Safe Browsing\UrlMalware.store
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Google\Chrome\User Data\Safe Browsing\UrlMalware.store.4_13386548640668936
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Microsoft\Edge\User Data\Safe Browsing\ChromeExtMalware.store
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Microsoft\Edge\User Data\Safe Browsing\ChromeExtMalware.store.32_13385042450097311
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Microsoft\Edge\User Data\Safe Browsing\ChromeExtMalware.store.32_13385064059742021
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Mozilla\Firefox\Profiles\9pupxyke.default-release\safebrowsing\google4\goog-malware-proto.metadata
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Mozilla\Firefox\Profiles\9pupxyke.default-release\safebrowsing\google4\goog-malware-proto.vlpset
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Programs\Arduino IDE\resources\app\lib\build\Release\winpty-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Programs\cursor\resources\app\node_modules\node-pty\build\Release\winpty-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Programs\cursor\_\resources\app\node_modules\node-pty\build\Release\winpty-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Local\Programs\Microsoft VS Code\resources\app\node_modules\node-pty\build\Release\winpty-agent.exe
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250408T012703\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250409T041612\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250411T001959\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250411T023839\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250412T220833\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250413T025200\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250413T043300\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250419T182231\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Code\logs\20250422T143813\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250409T033555\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250409T142552\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250413T043656\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250413T201944\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250414T033126\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250415T142749\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250417T040823\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250417T065724\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roaming\Cursor\logs\20250420T095531\remoteTunnelService.log
+[ALERTA] Possível malware encontrado: C:\\Users\silas\AppData\Roam
